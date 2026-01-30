@@ -569,6 +569,10 @@
 
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0xf8f9fa);
+      
+      // Aggiungi helper per gli assi
+      const axesHelper = new THREE.AxesHelper(5);
+      scene.add(axesHelper);
 
       camera = new THREE.PerspectiveCamera(
         60,
@@ -601,7 +605,7 @@
       d2.position.set(-5, 3, -5);
       scene.add(d2);
 
-      load3DModel("./assets/img/FBX/W6006.glb");
+      load3DModel("./assets/img/W6006.glb");
 
       window.addEventListener("resize", () => onResize(container));
       animate();
@@ -630,17 +634,47 @@
 
         console.log("Model dimensions:", size);
         console.log("Model center:", center);
+        console.log("Max dimension:", maxDim);
 
-        const scale = 3.5 / maxDim;
+        // Miglioramento del posizionamento e scala
+        const scale = 2 / maxDim; // Scala più piccola per vedere meglio
         loadedModel.scale.setScalar(scale);
-        loadedModel.position.sub(center.multiplyScalar(scale));
-        loadedModel.position.y -= 0.8;
+        
+        // Centra il modello nell'origine
+        loadedModel.position.copy(center).multiplyScalar(-scale);
+        
+        // Aggiusta la telecamera per inquadrare il modello
+        const distance = maxDim * 2;
+        camera.position.set(distance, distance/2, distance);
+        camera.lookAt(0, 0, 0);
+        controls.target.set(0, 0, 0);
+        controls.update();
 
         loadedModel.traverse((c) => {
           if (c.isMesh) {
             console.log("Found mesh:", c.name);
-            if (!c.material) c.material = new THREE.MeshStandardMaterial({ color: 0x0066cc });
-            c.material.side = THREE.DoubleSide;
+            console.log("Material:", c.material);
+            
+            if (c.material) {
+              console.log("Material type:", c.material.type);
+              console.log("Material name:", c.material.name);
+              
+              if (c.material.map) {
+                console.log("Diffuse map:", c.material.map);
+                console.log("Diffuse map image:", c.material.map.image);
+              }
+              
+              if (c.material.normalMap) {
+                console.log("Normal map:", c.material.normalMap);
+              }
+              
+              // Usa il materiale originale del modello
+              c.material.side = THREE.DoubleSide;
+            } else {
+              console.log("No material found, creating default");
+              c.material = new THREE.MeshStandardMaterial({ color: 0x0066cc });
+            }
+            
             c.castShadow = true;
             c.receiveShadow = true;
           }
@@ -885,4 +919,3 @@
   </script>
 </body>
 </html>
-
