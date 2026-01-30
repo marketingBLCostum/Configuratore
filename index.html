@@ -601,7 +601,7 @@
       d2.position.set(-5, 3, -5);
       scene.add(d2);
 
-      load3DModel(new URL("./assets/img/FBX/W6006.glb", window.location.href).toString());
+      load3DModel("./assets/img/FBX/W6006.glb");
 
       window.addEventListener("resize", () => onResize(container));
       animate();
@@ -885,3 +885,4 @@
   </script>
 </body>
 </html>
+
