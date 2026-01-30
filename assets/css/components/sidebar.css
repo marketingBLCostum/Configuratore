@@ -1,0 +1,166 @@
+/* Sidebar principale */
+.sidebar {
+  width: 7rem;
+  min-width: 7rem;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  background: radial-gradient(120% 120% at 20% 10%, rgba(255,255,255,.06), transparent 55%),
+              linear-gradient(180deg, #0b0b0f, #14141a);
+  box-shadow: 0 30px 80px rgba(0,0,0,.18);
+  z-index: 40;
+}
+
+/* Logo nella sidebar */
+.sidebar-logo {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 800;
+  font-size: 1.5rem;
+  user-select: none;
+}
+
+/* Contenitore dei pulsanti della sidebar */
+.sidebar-nav {
+  width: 100%;
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Pulsanti della sidebar */
+.side-btn {
+  width: 100%;
+  padding: 1.375rem 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.15s ease;
+  position: relative;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* Rimuovi il bordo superiore dal primo pulsante */
+.side-btn:first-child {
+  border-top: none;
+}
+
+/* Stile al passaggio del mouse */
+.side-btn:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Stile del pulsante attivo */
+.side-btn.active {
+  color: white;
+}
+
+/* Indicatore del pulsante attivo */
+.side-btn.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  background: white;
+  border-radius: 9999px;
+}
+
+/* Icone dei pulsanti */
+.side-btn i {
+  font-size: 1.5rem;
+}
+
+/* Testo sotto le icone */
+.side-btn span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+/* Versione compatta per schermi piccoli */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    padding: 0.5rem 1rem;
+    bottom: 0;
+    top: auto;
+    justify-content: space-around;
+  }
+  
+  .sidebar-logo {
+    display: none;
+  }
+  
+  .sidebar-nav {
+    flex-direction: row;
+    margin-top: 0;
+    justify-content: space-around;
+  }
+  
+  .side-btn {
+    width: auto;
+    padding: 0.75rem 1rem;
+    border-top: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  
+  .side-btn:first-child {
+    border-left: none;
+  }
+  
+  .side-btn::before {
+    top: 0;
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 50%;
+    height: 3px;
+  }
+  
+  .side-btn span {
+    display: none;
+  }
+  
+  .side-btn i {
+    font-size: 1.25rem;
+  }
+}
+
+/* Stili per il contenuto principale che si adatta alla sidebar */
+.main-content {
+  margin-left: 7rem;
+  width: calc(100% - 7rem);
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    margin-bottom: 4.5rem;
+    width: 100%;
+  }
+}

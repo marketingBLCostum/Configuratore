@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BL — Configuratore</title>
+
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+      "three/examples/jsm/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+    }
+  }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* Design minimalista moderno - stile flat */
+    * { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    
+    :root {
+      --primary: #0066cc;
+      --primary-hover: #0052a3;
+      --primary-light: #e6f2ff;
+      --border: #e1e5e9;
+      --border-light: #f0f2f5;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --bg-white: #ffffff;
+      --bg-gray: #f8f9fa;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* Reset e base */
+    body {
+      background: var(--bg-white);
+      margin: 0;
+      padding: 0;
+      color: var(--text-primary);
+    }
+    
+    /* Sidebar minimalista */
+    .sidebar {
+      background: var(--bg-white);
+      border-right: 1px solid var(--border);
+      width: 280px;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    .sidebar-section {
+      margin-bottom: 32px;
+    }
+    
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+    
+    /* Opzioni sidebar */
+    .sidebar-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-white);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+    }
+    
+    .sidebar-option:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    
+    .sidebar-option.active {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+    
+    .sidebar-option i {
+      width: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .sidebar-option span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    /* Miniature maglie */
+    .jersey-thumbnails {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .jersey-thumb {
+      aspect-ratio: 3/4;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-gray);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+    
+    .jersey-thumb:hover {
+      border-color: var(--primary);
+    }
+    
+    .jersey-thumb.selected {
+      border-color: var(--primary);
+      border-width: 2px;
+    }
+
+    /* Area principale */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-white);
+    }
+    
+    /* Header con sport selector */
+    .header {
+      padding: 20px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-white);
+    }
+    
+    .sport-selector {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    
+    .sport-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-white);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .sport-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .sport-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    
+    /* Area preview con supporto 3D */
+    .preview-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: var(--bg-gray);
+      min-height: 500px;
+      position: relative;
+    }
+    
+    .preview-container {
+      width: 100%;
+      max-width: 600px;
+      height: 500px;
+      background: var(--bg-white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    
+    #threejs-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    
+    .jersey-img {
+      display: none; /* Nascosta l'immagine 2D quando usiamo il 3D */
+    }
+    
+    /* Loading indicator per 3D */
+    .loading-3d {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--text-secondary);
+    }
+    
+    .loading-3d i {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Overlay per logo/testo */
+    .overlay-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+    }
+    
+    .ov-item {
+      position: absolute;
+      cursor: move;
+      pointer-events: all;
+      user-select: none;
+    }
+    
+    .ov-item.selected {
+      outline: 2px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Barra inferiore con azioni */
+    .bottom-bar {
+      padding: 16px 40px;
+      border-top: 1px solid var(--border);
+      background: var(--bg-white);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .left-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .right-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .btn-secondary {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--bg-white);
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .btn-primary {
+      padding: 10px 20px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: var(--primary);
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+    
+    /* Info box */
+    .info-box {
+      padding: 12px 16px;
+      background: var(--bg-gray);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    
+    .info-box strong {
+      color: var(--text-primary);
+      display: block;
+      margin-bottom: 4px;
+    }
+    
+    /* Pannelli contenuti */
+    .content-panel {
+      display: none;
+      padding: 20px;
+    }
+    
+    .content-panel.active {
+      display: block;
+    }
+    
+    /* Color picker */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    
+    .color-swatch {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .color-swatch:hover {
+      border-color: var(--primary);
+      transform: scale(1.1);
+    }
+    
+    .color-swatch.selected {
+      border-color: var(--primary);
+      border-width: 3px;
+    }
+    
+    /* Input fields */
+    .input-field {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      margin-top: 8px;
+      transition: all 0.2s ease;
+    }
+    
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-light);
+    }
+    
+    /* Upload area */
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-md);
+      padding: 32px;
+      text-align: center;
+      background: var(--bg-gray);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 12px;
+    }
+    
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    
+    .upload-area i {
+      font-size: 32px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    
+    .upload-area p {
+      margin: 8px 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+    
+    .upload-area strong {
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="flex h-screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Logo -->
+      <div class="mb-8">
+        <img src="images/LOGO BLACK AND WHITE.png" alt="Logo" class="h-8">
+      </div>
+      
+      <!-- Opzioni di configurazione -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">Opzioni</div>
+        <div class="sidebar-option active" data-panel="colors">
+          <i class="fas fa-palette"></i>
+          <span>Colori</span>
+        </div>
+        <div class="sidebar-option" data-panel="pattern">
+          <i class="fas fa-shapes"></i>
+          <span>Motivo</span>
+        </div>
+        <div class="sidebar-option" data-panel="gradient">
+          <i class="fas fa-fill"></i>
+          <span>Gradiente</span>
+        </div>
+        <div class="sidebar-option" data-panel="number">
+          <i class="fas fa-hashtag"></i>
+          <span>Numero</span>
+        </div>
+        <div class="sidebar-option" data-panel="name">
+          <i class="fas fa-user"></i>
+          <span>Nome</span>
+        </div>
+        <div class="sidebar-option" data-panel="text">
+          <i class="fas fa-font"></i>
+          <span>Testo</span>
+        </div>
+        <div class="sidebar-option" data-panel="logo">
+          <i class="fas fa-image"></i>
+          <span>Logo</span>
+        </div>
+      </div>
+      
+      <!-- Miniature maglie -->
+      <div class="sidebar-section">
+        <div class="sidebar-title">Design Predefiniti</div>
+        <div class="jersey-thumbnails">
+          <div class="jersey-thumb selected">A</div>
+          <div class="jersey-thumb">B</div>
+          <div class="jersey-thumb">C</div>
+          <div class="jersey-thumb">D</div>
+          <div class="jersey-thumb">E</div>
+          <div class="jersey-thumb">F</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Header con sport selector -->
+      <header class="header">
+        <div class="sport-selector">
+          <button class="sport-btn active" data-sport="ciclismo">Ciclismo</button>
+          <button class="sport-btn" data-sport="triathlon">Triathlon</button>
+          <button class="sport-btn" data-sport="running">Running</button>
+          <button class="sport-btn" data-sport="pattinaggio">Pattinaggio</button>
+          <button class="sport-btn" data-sport="canottaggio">Canottaggio</button>
+        </div>
+      </header>
+      
+      <!-- Area Preview -->
+      <section class="preview-area">
+        <div class="preview-container">
+          <div id="threejs-container">
+            <!-- 3D Renderer integrato -->
+            <canvas id="fbx-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+          </div>
+          <img id="jerseyPreview" class="jersey-img" alt="Anteprima maglia" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%22200%22%20height%3D%22300%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Crect%20width%3D%22200%22%20height%3D%22300%22%20fill%3D%22%23f0f0f0%22%2F%3E%3Ctext%20x%3D%22100%22%20y%3D%22150%22%20text-anchor%3D%22middle%22%20dominant-baseline%3D%22middle%22%20font-family%3D%22Arial%22%20font-size%3D%2214%22%20fill%3D%22%23999%22%3EAnteprima%20maglia%3C%2Ftext%3E%3C%2Fsvg%3E" />
+          <div id="overlayLayer" class="overlay-layer"></div>
+        </div>
+      </section>
+      
+      <!-- Barra inferiore con azioni -->
+      <footer class="bottom-bar">
+        <div class="left-actions">
+          <button class="btn-secondary">
+            <i class="fas fa-share"></i>
+            Condividi il design
+          </button>
+          <button class="btn-secondary">
+            <i class="fas fa-copy"></i>
+            Duplica
+          </button>
+          <button class="btn-secondary">
+            <i class="fas fa-save"></i>
+            Salva e visualizza
+          </button>
+        </div>
+        
+        <div class="right-actions">
+          <div class="info-box">
+            <strong>Controllo del design</strong>
+            Prezzo: €89.99
+          </div>
+          <button class="btn-primary">
+            Completare la configurazione
+          </button>
+        </div>
+      </footer>
+      
+    </main>
+    
+    <!-- Pannelli contenuti (nascosti) -->
+    <div id="contentPanels">
+      <!-- Pannello Colori -->
+      <div id="colors-panel" class="content-panel active">
+        <div class="sidebar-title">Colori Principali</div>
+        <div class="color-grid">
+          <div class="color-swatch selected" style="background: #ffffff; border-color: #ccc;"></div>
+          <div class="color-swatch" style="background: #000000;"></div>
+          <div class="color-swatch" style="background: #ff0000;"></div>
+          <div class="color-swatch" style="background: #0066cc;"></div>
+          <div class="color-swatch" style="background: #00aa00;"></div>
+          <div class="color-swatch" style="background: #ffaa00;"></div>
+        </div>
+      </div>
+      </div>
+
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.128.0/build/three.module.js";
+    import { OrbitControls } from "https://unpkg.com/three@0.128.0/examples/jsm/controls/OrbitControls.js";
+    import { GLTFLoader } from "https://unpkg.com/three@0.128.0/examples/jsm/loaders/GLTFLoader.js";
+    import { FBXLoader } from "https://unpkg.com/three@0.128.0/examples/jsm/loaders/FBXLoader.js";
+    import { OBJLoader } from "https://unpkg.com/three@0.128.0/examples/jsm/loaders/OBJLoader.js";
+
+    let scene, camera, renderer, controls, model;
+    let isModelLoaded = false;
+
+    function init3D() {
+      const canvas = document.getElementById("fbx-canvas");
+      const container = document.getElementById("threejs-container");
+      if (!canvas || !container) return console.error("Canvas or container not found");
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xf8f9fa);
+
+      camera = new THREE.PerspectiveCamera(
+        60,
+        container.clientWidth / container.clientHeight,
+        0.1,
+        1000
+      );
+      camera.position.set(0, 0, 5);
+
+      renderer = new THREE.WebGLRenderer({ 
+        canvas: canvas, 
+        antialias: true,
+        alpha: true 
+      });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+
+      controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.enableZoom = true;
+      controls.enableRotate = true;
+      controls.enablePan = false;
+
+      // Lighting
+      scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+      const d1 = new THREE.DirectionalLight(0xffffff, 0.9);
+      d1.position.set(5, 5, 5);
+      scene.add(d1);
+      const d2 = new THREE.DirectionalLight(0xffffff, 0.3);
+      d2.position.set(-5, 3, -5);
+      scene.add(d2);
+
+      load3DModel(new URL("./assets/img/FBX/W6006.glb", window.location.href).toString());
+
+      window.addEventListener("resize", () => onResize(container));
+      animate();
+    }
+
+    function load3DModel(path) {
+      const ext = path.split(".").pop().toLowerCase();
+      console.log("Loading:", path);
+      console.log("Extension:", ext);
+      
+      // Check GLB file status
+      fetch(path).then(r => console.log("GLB status:", r.status)).catch(console.error);
+
+      const onLoaded = (object) => {
+        console.log("Model loaded successfully:", object);
+        if (model) scene.remove(model);
+
+        // GLTFLoader returns a scene, FBXLoader returns an object
+        const loadedModel = object.scene || object;
+        console.log("Loaded model:", loadedModel);
+
+        const box = new THREE.Box3().setFromObject(loadedModel);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z) || 1;
+
+        console.log("Model dimensions:", size);
+        console.log("Model center:", center);
+
+        const scale = 3.5 / maxDim;
+        loadedModel.scale.setScalar(scale);
+        loadedModel.position.sub(center.multiplyScalar(scale));
+        loadedModel.position.y -= 0.8;
+
+        loadedModel.traverse((c) => {
+          if (c.isMesh) {
+            console.log("Found mesh:", c.name);
+            if (!c.material) c.material = new THREE.MeshStandardMaterial({ color: 0x0066cc });
+            c.material.side = THREE.DoubleSide;
+            c.castShadow = true;
+            c.receiveShadow = true;
+          }
+        });
+
+        model = loadedModel;
+        scene.add(model);
+        isModelLoaded = true;
+        console.log("GLB model loaded and added to scene!");
+      };
+
+      const onProgress = (xhr) => {
+        if (xhr.total) console.log("Progress:", ((xhr.loaded / xhr.total) * 100).toFixed(1) + "%");
+      };
+
+      const onError = (err) => {
+        console.error("Model error:", err);
+        console.error("Error details:", err.message || err);
+        console.log("Falling back to demo geometry");
+        createDemoGeometry();
+      };
+
+      try {
+        if (ext === "glb" || ext === "gltf") {
+          console.log("Using GLTFLoader");
+          new GLTFLoader().load(path, onLoaded, onProgress, onError);
+        } else if (ext === "fbx") {
+          console.log("Using FBXLoader");
+          new FBXLoader().load(path, onLoaded, onProgress, onError);
+        } else if (ext === "obj") {
+          console.log("Using OBJLoader");
+          new OBJLoader().load(path, onLoaded, onProgress, onError);
+        } else {
+          onError("Unsupported format: " + ext);
+        }
+      } catch (error) {
+        console.error("Exception during loading:", error);
+        createDemoGeometry();
+      }
+    }
+
+    function createDemoGeometry() {
+      console.log("Creating W6006-like geometry...");
+      
+      // Create a more realistic jersey geometry based on W6006 structure
+      const group = new THREE.Group();
+      
+      // Main body (torso) - more realistic shape
+      const bodyShape = new THREE.Shape();
+      bodyShape.moveTo(-1, 1.5);
+      bodyShape.quadraticCurveTo(-1.2, 1.2, -1.2, 0.8);
+      bodyShape.lineTo(-1.2, -1.2);
+      bodyShape.quadraticCurveTo(-1.2, -1.4, -1, -1.5);
+      bodyShape.lineTo(1, -1.5);
+      bodyShape.quadraticCurveTo(1.2, -1.4, 1.2, -1.2);
+      bodyShape.lineTo(1.2, 0.8);
+      bodyShape.quadraticCurveTo(1.2, 1.2, 1, 1.5);
+      bodyShape.closePath();
+      
+      const bodyGeometry = new THREE.ExtrudeGeometry(bodyShape, {
+        depth: 0.8,
+        bevelEnabled: true,
+        bevelThickness: 0.05,
+        bevelSize: 0.05,
+        bevelSegments: 3
+      });
+      
+      const bodyMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x0066cc,
+        metalness: 0.1,
+        roughness: 0.8
+      });
+      
+      const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
+      body.rotation.x = Math.PI / 2;
+      body.position.set(0, 0, 0);
+      body.castShadow = true;
+      body.receiveShadow = true;
+      
+      // Sleeves - more realistic
+      const sleeveGeometry = new THREE.CylinderGeometry(0.4, 0.3, 1.2, 8);
+      const sleeveMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x0066cc,
+        metalness: 0.1,
+        roughness: 0.8
+      });
+      
+      const leftSleeve = new THREE.Mesh(sleeveGeometry, sleeveMaterial);
+      leftSleeve.position.set(-1.5, -0.5, 0);
+      leftSleeve.rotation.z = Math.PI / 6;
+      leftSleeve.castShadow = true;
+      leftSleeve.receiveShadow = true;
+      
+      const rightSleeve = new THREE.Mesh(sleeveGeometry, sleeveMaterial);
+      rightSleeve.position.set(1.5, -0.5, 0);
+      rightSleeve.rotation.z = -Math.PI / 6;
+      rightSleeve.castShadow = true;
+      rightSleeve.receiveShadow = true;
+      
+      // Collar
+      const collarGeometry = new THREE.TorusGeometry(0.6, 0.15, 8, 6, Math.PI);
+      const collarMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x004499,
+        metalness: 0.1,
+        roughness: 0.8
+      });
+      
+      const collar = new THREE.Mesh(collarGeometry, collarMaterial);
+      collar.position.set(0, 1.4, 0);
+      collar.rotation.z = Math.PI;
+      collar.castShadow = true;
+      collar.receiveShadow = true;
+      
+      // Side panels for more realistic look
+      const panelGeometry = new THREE.BoxGeometry(0.1, 2.5, 0.8);
+      const panelMaterial = new THREE.MeshStandardMaterial({ 
+        color: 0x0052a3,
+        metalness: 0.1,
+        roughness: 0.8
+      });
+      
+      const leftPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+      leftPanel.position.set(-1.1, 0, 0);
+      leftPanel.castShadow = true;
+      leftPanel.receiveShadow = true;
+      
+      const rightPanel = new THREE.Mesh(panelGeometry, panelMaterial);
+      rightPanel.position.set(1.1, 0, 0);
+      rightPanel.castShadow = true;
+      rightPanel.receiveShadow = true;
+      
+      group.add(body);
+      group.add(leftSleeve);
+      group.add(rightSleeve);
+      group.add(collar);
+      group.add(leftPanel);
+      group.add(rightPanel);
+      
+      model = group;
+      scene.add(model);
+      isModelLoaded = true;
+      
+      console.log("W6006-like geometry created!");
+    }
+
+    function onResize(container) {
+      if (!renderer || !camera) return;
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls?.update();
+      if (model && isModelLoaded) model.rotation.y += 0.005;
+      renderer?.render(scene, camera);
+    }
+
+    // Sidebar navigation and UI interactions
+    document.addEventListener("DOMContentLoaded", function() {
+      // Initialize 3D scene
+      init3D();
+      
+      // Sidebar options
+      const sidebarOptions = document.querySelectorAll('.sidebar-option');
+      const contentPanels = document.querySelectorAll('.content-panel');
+      
+      sidebarOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const targetPanel = this.getAttribute('data-panel');
+          
+          // Update active states
+          sidebarOptions.forEach(opt => opt.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Show/hide panels
+          contentPanels.forEach(panel => panel.classList.remove('active'));
+          const target = document.getElementById(targetPanel + '-panel');
+          if (target) {
+            target.classList.add('active');
+          }
+        });
+      });
+      
+      // Sport selector
+      const sportButtons = document.querySelectorAll('.sport-btn');
+      sportButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          sportButtons.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+        });
+      });
+      
+      // Jersey thumbnails
+      const jerseyThumbs = document.querySelectorAll('.jersey-thumb');
+      jerseyThumbs.forEach(thumb => {
+        thumb.addEventListener('click', function() {
+          jerseyThumbs.forEach(t => t.classList.remove('selected'));
+          this.classList.add('selected');
+        });
+      });
+      
+      // Color swatches
+      const colorSwatches = document.querySelectorAll('.color-swatch');
+      colorSwatches.forEach(swatch => {
+        swatch.addEventListener('click', function() {
+          colorSwatches.forEach(s => s.classList.remove('selected'));
+          this.classList.add('selected');
+          
+          // Change model material color
+          if (model) {
+            const color = this.style.background;
+            if (color && color !== 'transparent') {
+              const threeColor = new THREE.Color(color);
+              model.traverse((child) => {
+                if (child.isMesh && child.material) {
+                  child.material.color = threeColor;
+                }
+              });
+            }
+          }
+        });
+      });
+      
+      // Bottom bar actions
+      const shareBtn = document.querySelector('.btn-secondary');
+      const completeBtn = document.querySelector('.btn-primary');
+      
+      if (shareBtn) {
+        shareBtn.addEventListener('click', function() {
+          alert('Funzionalità di condivisione in sviluppo');
+        });
+      }
+      
+      if (completeBtn) {
+        completeBtn.addEventListener('click', function() {
+          alert('Configurazione completata!');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
